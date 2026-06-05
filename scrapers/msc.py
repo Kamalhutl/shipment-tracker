@@ -39,6 +39,11 @@ def _dismiss_cookies(driver):
                 + '&landingPath=NotLandingPage'
                 + '&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1'
                 + '&geolocation=IN%3BMH&AwaitingReconsent=false; path=/';
+        """)
+    except Exception:
+        pass
+
+def _label_value(body_lines, label):
     for i, line in enumerate(body_lines):
         if line.strip().lower() == label.lower():
             for j in range(i + 1, min(i + 4, len(body_lines))):
