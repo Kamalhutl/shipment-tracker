@@ -1,0 +1,14 @@
+2026-06-25 16:35:39,438  INFO     =======================================================
+2026-06-25 16:35:39,439  INFO       SHIPPING TRACKER STARTED
+2026-06-25 16:35:39,439  INFO     =======================================================
+2026-06-25 16:35:39,458  INFO     Loaded: tracking_2.xlsx
+2026-06-25 16:35:39,477  INFO     Found 1 BL rows in Sheet 1
+2026-06-25 16:35:39,477  INFO     Starting Chrome...
+2026-06-25 16:35:39,480  INFO     ====== WebDriver manager ======
+2026-06-25 16:35:41,760  INFO     Driver [/Users/apple/.wdm/drivers/chromedriver/mac-arm64/149.0.7827.155/chromedriver-mac-arm64/chromedriver] found in cache by browser version
+2026-06-25 16:35:45,434  INFO     [1/1] Hapag | HLCULIV251113466
+2026-06-25 16:35:45,435  INFO     [HAPAG] Scraping BL: HLCULIV251113466
+2026-06-25 16:36:09,038  WARNING  Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=65033): Failed to establish a new connection: [Errno 61] Connection refused")': /session/97fe70baeca2cdccda4372ba9f47f3e8
+2026-06-25 16:36:09,061  WARNING  Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=65033): Failed to establish a new connection: [Errno 61] Connection refused")': /session/97fe70baeca2cdccda4372ba9f47f3e8
+2026-06-25 16:36:09,063  WARNING  Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError("HTTPConnection(host='localhost', port=65033): Failed to establish a new connection: [Errno 61] Connection refused")': /session/97fe70baeca2cdccda4372ba9f47f3e8
+2026-06-25 16:36:09,064  INFO     Browser closed.

@@ -1,0 +1,25 @@
+2026-06-25 15:39:37,617  INFO     =======================================================
+2026-06-25 15:39:37,617  INFO       SHIPPING TRACKER STARTED
+2026-06-25 15:39:37,617  INFO     =======================================================
+2026-06-25 15:39:37,636  INFO     Loaded: tracking_2.xlsx
+2026-06-25 15:39:37,656  INFO     Found 1 BL rows in Sheet 1
+2026-06-25 15:39:37,656  INFO     Starting Chrome...
+2026-06-25 15:39:37,659  INFO     ====== WebDriver manager ======
+2026-06-25 15:39:39,370  INFO     Get LATEST chromedriver version for google-chrome
+2026-06-25 15:39:39,766  INFO     There is no [mac-arm64] chromedriver "149.0.7827.155" for browser google-chrome "149.0.7827" in cache
+2026-06-25 15:39:39,862  INFO     There is no [mac-arm64] chromedriver "149.0.7827.155" for browser google-chrome "149.0.7827" in cache
+2026-06-25 15:39:39,863  INFO     Get LATEST chromedriver version for google-chrome
+2026-06-25 15:39:40,350  INFO     WebDriver version 149.0.7827.155 selected
+2026-06-25 15:39:40,354  INFO     Modern chrome version https://storage.googleapis.com/chrome-for-testing-public/149.0.7827.155/mac-arm64/chromedriver-mac-arm64.zip
+2026-06-25 15:39:40,354  INFO     About to download new driver from https://storage.googleapis.com/chrome-for-testing-public/149.0.7827.155/mac-arm64/chromedriver-mac-arm64.zip
+2026-06-25 15:39:40,690  INFO     Driver downloading response is 200
+2026-06-25 15:39:42,302  INFO     Driver has been saved in cache [/Users/apple/.wdm/drivers/chromedriver/mac-arm64/149.0.7827.155]
+2026-06-25 15:39:46,580  INFO     [1/1] MSC | MEDUGR867656
+2026-06-25 15:40:21,848  INFO       ✅ Empty received at CY • Tuticorin, IN • 03/06/2026
+2026-06-25 15:40:24,010  INFO     Browser closed.
+2026-06-25 15:40:24,045  INFO     Updated row 13 → MEDUGR867656
+2026-06-25 15:40:24,065  INFO     Saved: tracking_2.xlsx
+2026-06-25 15:40:24,065  INFO     =======================================================
+2026-06-25 15:40:24,065  INFO     DONE — 1 scraped OK, 0 errors
+2026-06-25 15:40:24,065  INFO     Log saved: logs/2026-06-25_15-39-37.log
+2026-06-25 15:40:24,065  INFO     =======================================================

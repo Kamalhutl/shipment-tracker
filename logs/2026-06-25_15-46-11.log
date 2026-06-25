@@ -1,0 +1,17 @@
+2026-06-25 15:46:11,077  INFO     =======================================================
+2026-06-25 15:46:11,077  INFO       SHIPPING TRACKER STARTED
+2026-06-25 15:46:11,077  INFO     =======================================================
+2026-06-25 15:46:11,096  INFO     Loaded: tracking_2.xlsx
+2026-06-25 15:46:11,115  INFO     Found 1 BL rows in Sheet 1
+2026-06-25 15:46:11,115  INFO     Starting Chrome...
+2026-06-25 15:46:11,119  INFO     ====== WebDriver manager ======
+2026-06-25 15:46:12,353  INFO     Driver [/Users/apple/.wdm/drivers/chromedriver/mac-arm64/149.0.7827.155/chromedriver-mac-arm64/chromedriver] found in cache by browser version
+2026-06-25 15:46:15,120  INFO     [1/1] CMA | LPL1488455
+2026-06-25 15:46:55,393  ERROR      ❌ Error scraping CMA / LPL1488455: 'NoneType' object has no attribute 'is_displayed'
+2026-06-25 15:46:57,558  INFO     Browser closed.
+2026-06-25 15:46:57,607  INFO     Updated row 17 → LPL1488455
+2026-06-25 15:46:57,626  INFO     Saved: tracking_2.xlsx
+2026-06-25 15:46:57,627  INFO     =======================================================
+2026-06-25 15:46:57,627  INFO     DONE — 0 scraped OK, 1 errors
+2026-06-25 15:46:57,627  INFO     Log saved: logs/2026-06-25_15-46-11.log
+2026-06-25 15:46:57,627  INFO     =======================================================

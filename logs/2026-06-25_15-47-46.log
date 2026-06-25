@@ -1,0 +1,49 @@
+2026-06-25 15:47:46,552  INFO     =======================================================
+2026-06-25 15:47:46,552  INFO       SHIPPING TRACKER STARTED
+2026-06-25 15:47:46,552  INFO     =======================================================
+2026-06-25 15:47:46,571  INFO     Loaded: tracking_2.xlsx
+2026-06-25 15:47:46,592  INFO     Found 1 BL rows in Sheet 1
+2026-06-25 15:47:46,592  INFO     Starting Chrome...
+2026-06-25 15:47:46,597  INFO     ====== WebDriver manager ======
+2026-06-25 15:47:47,862  INFO     Driver [/Users/apple/.wdm/drivers/chromedriver/mac-arm64/149.0.7827.155/chromedriver-mac-arm64/chromedriver] found in cache by browser version
+2026-06-25 15:47:50,851  INFO     [1/1] Hapag | HLCULIV251113466
+2026-06-25 15:47:50,851  INFO     [HAPAG] Scraping BL: HLCULIV251113466
+2026-06-25 15:48:07,790  INFO     [HAPAG] Page loaded: Tracing by Booking - Hapag-Lloyd
+2026-06-25 15:48:08,976  INFO     [HAPAG] Found BL input via: input[id*='hl16']
+2026-06-25 15:48:09,787  INFO     [HAPAG] Submitted via Enter key
+2026-06-25 15:48:12,801  INFO     [HAPAG] Table loaded
+2026-06-25 15:48:14,844  INFO     [HAPAG] Container list detected — extracting containers
+2026-06-25 15:48:14,864  INFO     [HAPAG] Containers found in table: ['HAMU3920481', 'FCIU7263420']
+2026-06-25 15:48:14,864  INFO     [HAPAG] Using first container: HAMU3920481
+2026-06-25 15:48:14,864  INFO     [HAPAG] Navigating to container URL: https://www.hapag-lloyd.com/en/online-business/track/track-by-booking-solution.html?view=S8510&container=HAMU++3920481
+2026-06-25 15:48:25,531  INFO     [HAPAG] Events page loaded
+2026-06-25 15:48:25,835  INFO     [HAPAG] Events table rows: 9
+2026-06-25 15:48:25,908  INFO     [HAPAG] Row → status=Status Place of Activity Date Time Transport Voyage No.
+Gate out empty SINGAPORE 2026-06-09 14:21 Truck
+Arrival in SINGAPORE 2026-06-10 16:52 Truck
+Loaded SINGAPORE 2026-06-18 21:15 DAMIETTA EXPRESS 618E
+Vessel departed SINGAPORE 2026-06-19 02:20 DAMIETTA EXPRESS 618E
+Vessel arrival SHANGHAI 2026-06-27 17:00 DAMIETTA EXPRESS 618E | place= | date=Gate out empty | time=SINGAPORE | transport=2026-06-09 | voyage=14:21
+2026-06-25 15:48:25,909  INFO     [HAPAG] Latest status: Status Place of Activity Date Time Transport Voyage No.
+Gate out empty SINGAPORE 2026-06-09 14:21 Truck
+Arrival in SINGAPORE 2026-06-10 16:52 Truck
+Loaded SINGAPORE 2026-06-18 21:15 DAMIETTA EXPRESS 618E
+Vessel departed SINGAPORE 2026-06-19 02:20 DAMIETTA EXPRESS 618E
+Vessel arrival SHANGHAI 2026-06-27 17:00 DAMIETTA EXPRESS 618E
+2026-06-25 15:48:25,909  INFO     [HAPAG] Vessel (loaded): 2026-06-09 / 14:21
+2026-06-25 15:48:25,978  INFO     [HAPAG] Row → status=SINGAPORE | place=2026-06-09 | date=14:21 | time=Truck | transport= | voyage=
+2026-06-25 15:48:26,015  INFO     [HAPAG] Row → status=SINGAPORE | place=2026-06-10 | date=16:52 | time=Truck | transport= | voyage=
+2026-06-25 15:48:26,050  INFO     [HAPAG] Row → status=SINGAPORE | place=2026-06-18 | date=21:15 | time=DAMIETTA EXPRESS | transport=618E | voyage=
+2026-06-25 15:48:26,084  INFO     [HAPAG] Row → status=SINGAPORE | place=2026-06-19 | date=02:20 | time=DAMIETTA EXPRESS | transport=618E | voyage=
+2026-06-25 15:48:26,117  INFO     [HAPAG] Row → status=SHANGHAI | place=2026-06-27 | date=17:00 | time=DAMIETTA EXPRESS | transport=618E | voyage=
+2026-06-25 15:48:26,117  INFO     [HAPAG] Container: HAMU3920481
+2026-06-25 15:48:26,117  INFO     [HAPAG] Final result: {'POL': '', 'POD': '', 'Container No': 'HAMU3920481', 'Vessel': '2026-06-09 / 14:21', 'ATA': '', 'FND': '', 'Latest Status': 'Status Place of Activity Date Time Transport Voyage No.\nGate out empty SINGAPORE 2026-06-09 14:21 Truck\nArrival in SINGAPORE 2026-06-10 16:52 Truck\nLoaded SINGAPORE 2026-06-18 21:15 DAMIETTA EXPRESS 618E\nVessel departed SINGAPORE 2026-06-19 02:20 DAMIETTA EXPRESS 618E\nVessel arrival SHANGHAI 2026-06-27 17:00 DAMIETTA EXPRESS 618E'}
+2026-06-25 15:48:26,119  INFO       ✅ Status Place of Activity Date Time Transport Voyage No.
+Gate
+2026-06-25 15:48:28,264  INFO     Browser closed.
+2026-06-25 15:48:28,295  INFO     Updated row 20 → HLCULIV251113466
+2026-06-25 15:48:28,313  INFO     Saved: tracking_2.xlsx
+2026-06-25 15:48:28,313  INFO     =======================================================
+2026-06-25 15:48:28,313  INFO     DONE — 1 scraped OK, 0 errors
+2026-06-25 15:48:28,313  INFO     Log saved: logs/2026-06-25_15-47-46.log
+2026-06-25 15:48:28,313  INFO     =======================================================

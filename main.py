@@ -43,9 +43,8 @@ from scrapers.msc      import scrape as msc_scrape
 from scrapers.cma      import scrape as cma_scrape
 from scrapers.cosco    import scrape as cosco_scrape
 from scrapers.hapag    import scrape as hapag_scrape
-from scrapers.oocl     import scrape as oocl_scrape
 from scrapers.interasia import scrape as interasia_scrape
-from scrapers.kmtc     import scrape as kmtc_scrape
+
 
 EXCEL_FILE   = "tracking_2.xlsx"
 SHEET_INPUT  = "BL Input"
@@ -87,10 +86,10 @@ SCRAPER_MAP = {
     "HAPAG-LLOYD": hapag_scrape,
     "HAPAG LLOYD": hapag_scrape,
     "HAPAG":       hapag_scrape,
-    "OOCL":        oocl_scrape,
+
     "INTERASIA":   interasia_scrape,
     "INTER ASIA":  interasia_scrape,
-    "KMTC":        kmtc_scrape,
+
 }
 
 def get_scraper(line_raw: str):
