@@ -32,8 +32,8 @@ from typing import Optional
 
 import requests
 
-from base import BaseAdapter
-from schema import (
+from adap.base import BaseAdapter
+from adap.schema import (
     UnifiedTracking,
     make_event,
     make_container,

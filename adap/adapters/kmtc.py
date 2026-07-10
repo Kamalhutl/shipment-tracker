@@ -3,8 +3,11 @@ import json
 from datetime import datetime
 from typing import Optional
 
+from adap.base import BaseAdapter
+from adap.schema import make_container, make_event
 
-class KMTCAdapter:
+class KMTCAdapter(BaseAdapter):
+    CARRIER_NAME = "KMTC"
     """
     Adapter for KMTC carrier tracking.
     API: POST https://api.ekmtc.com/trans/trans/cargo-tracking/
@@ -131,13 +134,17 @@ class KMTCAdapter:
             "bl_number":  bl_no,
             "carrier":    "KMTC",
             "booking_no": first.get("bkgNo", ""),
-            "pol":        first.get("polPortNm", ""),   # Port of Loading
-            "pod":        first.get("podPortNm", ""),   # Port of Discharge
+            "pol":        first.get("polPortNm", ""),
+            "pod":        first.get("podPortNm", ""),
             "vessel":     self._parse_vessel_name(first.get("vslNm", "")),
             "voyage":     first.get("voyNo", ""),
             "etd":        self._parse_date(first.get("etd", "")),
+            "eta":        self._parse_date(first.get("eta", "")),   # ← ADD
             "containers": containers,
-            "raw":        raw,   # keep original for debugging; remove in prod if needed
+            "vessels":    [],                                        # ← ADD
+            "route":      [],                                        # ← ADD
+            "events":     [],                                        # ← ADD
+            "raw":        raw,
         }
 
     # -------------------------------------------------------------------------

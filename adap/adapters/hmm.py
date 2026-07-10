@@ -12,8 +12,8 @@ except ImportError:
     import requests
     CURL_CFFI_AVAILABLE = False
 
-from base import BaseAdapter
-from schema import make_event, make_route_point
+from adap.base import BaseAdapter
+from adap.schema import make_event, make_route_point
 
 
 class HMMAdapter(BaseAdapter):

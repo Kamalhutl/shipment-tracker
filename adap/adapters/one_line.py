@@ -3,8 +3,8 @@ import json
 from datetime import datetime
 from typing import Optional
 
-from base import BaseAdapter
-from schema import (
+from adap.base import BaseAdapter
+from adap.schema import (
     UnifiedTracking, Container, TrackingEvent,
     make_event, make_container
 )
@@ -13,18 +13,26 @@ from schema import (
 class OneLineAdapter(BaseAdapter):
     """
     Adapter for ONE LINE carrier tracking.
-    API: GET https://ecomm.one-line.com/api/v2/edh/containers/track-and-trace/cop-events
-    Params: booking_no, container_no
-    Auth: Cookie-based (sessLocale, loginType, isPin)
+    API: POST https://ecomm.one-line.com/api/v2/edh/containers/track-and-trace/search
+    Body: {"page": 1, "page_length": 10,
+           "filters": {"search_text": "<booking/container no>", "search_type": "BKG_NO" | "CN"},
+           "timestamp": <epoch ms>}
+    Auth: Cookie-based (sessLocale, loginType, isPin, __cf_bm, _cfuvid, etc.)
+
+    NOTE: the previous version of this adapter called a GET .../cop-events
+    endpoint. That endpoint returns HTTP 400 for these inputs — it's not
+    what ecomm.one-line.com itself uses. The POST .../search endpoint above
+    is the one confirmed working via browser devtools capture.
     """
 
     CARRIER_NAME = "ONE_LINE"
 
-    BASE_URL = "https://ecomm.one-line.com/api/v2/edh/containers/track-and-trace/cop-events"
+    BASE_URL = "https://ecomm.one-line.com/api/v2/edh/containers/track-and-trace/search"
 
     # -------------------------------------------------------------------------
     # Cookie — paste your full cookie string here from DevTools/Postman
-    # It expires; you'll need to refresh it periodically
+    # It expires (watch for __cf_bm / _cfuvid / _dd_s_v2); you'll need to
+    # refresh it periodically.
     # -------------------------------------------------------------------------
     COOKIE = "sessLocale=en; loginType=okta; isPin=false;"  # <-- paste full cookie here
 
@@ -32,6 +40,8 @@ class OneLineAdapter(BaseAdapter):
         "accept":               "application/json, text/plain, */*",
         "accept-language":      "en-GB,en-US;q=0.9,en;q=0.8",
         "cache-control":        "no-cache, no-store, must-revalidate",
+        "content-type":         "application/json",
+        "origin":               "https://ecomm.one-line.com",
         "priority":             "u=1, i",
         "referer":              "https://ecomm.one-line.com/",
         "sec-ch-ua":            '"Google Chrome";v="149", "Chromium";v="149", "Not.A/Brand";v="99"',
@@ -44,17 +54,16 @@ class OneLineAdapter(BaseAdapter):
         "Cookie":               COOKIE,
     }
 
+    # ONE LINE booking numbers commonly appear prefixed with the carrier's
+    # SCAC code "ONEY" (e.g. "ONEYDOHG00091700" -> "DOHG00091700").
+    BOOKING_PREFIX = "ONEY"
+
     # -------------------------------------------------------------------------
-    # ONE LINE quirk: needs container_no alongside booking_no
-    # If you only have BL/booking_no, pass container_no="" and it still works
-    # but returns less granular event data
+    # Allow an optional container_no override; ONE LINE's search filter
+    # supports either a booking/BL search (BKG_NO) or a container search (CN).
     # -------------------------------------------------------------------------
 
     def fetch(self, bl_no: str, container_no: str = "") -> dict:
-        """
-        Override fetch to accept optional container_no.
-        ONE LINE uses booking_no + container_no as query params.
-        """
         bl_no = bl_no.strip().upper()
         raw = self._call_api(bl_no, container_no)
         if "error" in raw:
@@ -70,25 +79,40 @@ class OneLineAdapter(BaseAdapter):
 
     def _call_api(self, bl_no: str, container_no: str = "") -> dict:
         """
-        GET cop-events with booking_no + container_no as query params.
+        POST track-and-trace/search with a JSON body.
 
-        URL structure from screenshot:
-        /cop-events?booking_no=CPTG13635800&container_no=FFAU2906595
+        search_text is the booking number (ONEY prefix stripped) unless a
+        container_no was explicitly supplied, in which case we search by
+        container number instead.
         """
 
-        # In one_line.py _call_api()
-# ONE LINE booking_no doesn't include carrier prefix
-        booking_no = bl_no.lstrip("ONEY") if bl_no.startswith("ONEY") else bl_no
-        params = {"booking_no": booking_no, "container_no": container_no}
-        # Remove container_no param if empty (cleaner request)
-        if not container_no:
-            params.pop("container_no")
+        if container_no:
+            search_text = container_no.strip().upper()
+            search_type = "CN"
+        else:
+            # Strip the literal "ONEY" prefix (NOT lstrip — lstrip removes
+            # any leading chars found in the given set, not the substring,
+            # and would over-strip a number like "ONEYONE123456").
+            search_text = bl_no
+            if search_text.startswith(self.BOOKING_PREFIX):
+                search_text = search_text[len(self.BOOKING_PREFIX):]
+            search_type = "BKG_NO"
+
+        payload = {
+            "page": 1,
+            "page_length": 10,
+            "filters": {
+                "search_text": search_text,
+                "search_type": search_type,
+            },
+            "timestamp": int(datetime.utcnow().timestamp() * 1000),
+        }
 
         try:
-            response = requests.get(
+            response = requests.post(
                 self.BASE_URL,
                 headers=self.HEADERS,
-                params=params,
+                json=payload,
                 timeout=30,
             )
 
@@ -103,7 +127,16 @@ class OneLineAdapter(BaseAdapter):
             return {"error": "ONE LINE API timeout", "carrier": self.CARRIER_NAME, "bl_number": bl_no}
 
         except requests.exceptions.HTTPError as e:
-            return {"error": f"ONE LINE HTTP error: {e.response.status_code}", "carrier": self.CARRIER_NAME, "bl_number": bl_no}
+            body_snippet = ""
+            try:
+                body_snippet = e.response.text[:300]
+            except Exception:
+                pass
+            return {
+                "error": f"ONE LINE HTTP error: {e.response.status_code} {body_snippet}".strip(),
+                "carrier": self.CARRIER_NAME,
+                "bl_number": bl_no,
+            }
 
         except requests.exceptions.RequestException as e:
             return {"error": f"ONE LINE request failed: {str(e)}", "carrier": self.CARRIER_NAME, "bl_number": bl_no}
@@ -117,46 +150,80 @@ class OneLineAdapter(BaseAdapter):
 
     def _normalize(self, raw: dict, bl_no: str) -> dict:
         """
-        Map raw ONE LINE response → unified schema.
+        Map raw ONE LINE /search response → unified schema.
 
-        Raw ONE LINE structure (from screenshot):
-        {
-            "e": "Success",
-            "a": [                          ← list of events
-                {
-                    "eventName":            "Empty Container Release to Shipper",
-                    "eventLocalPortDate":   "2026-04-24T15:45:00.000Z",
-                    "eventDate":            "2026-04-24T13:45:00.000Z",
-                    "triggerType":          "ACTUAL",
-                    "matrixId":             "E012",
-                    "copSequence":          1011,
-                    "opusCode":             "MOTYDO",
-                    "nodeCode":             "ZADUR19",
-                    "location": {
-                        "code":             "ZADUR",
-                        "locationName":     "DURBAN",
-                        "countryName":      "SOUTH AFRICA"
-                    }
-                },
-                ...
-            ]
-        }
+        IMPORTANT: this adapter was previously written against the
+        .../cop-events response shape ({"e": "Success", "a": [...]}).
+        The .../search endpoint we're now calling is a different API and
+        very likely returns a different envelope (e.g. a "data"/"list"/
+        "result" wrapper around per-booking or per-container records,
+        possibly paginated per the page/page_length we send).
+
+        We don't yet have a captured sample of a real /search response, so
+        this parses defensively: it looks for a list of records/events
+        under several common key names, and falls back to treating the
+        whole payload as a single record if none match. Once you've hit
+        the endpoint successfully, print(raw) and tighten this to match
+        the actual field names.
         """
 
         print("RAW RESPONSE:", json.dumps(raw, indent=2))
-        status  = raw.get("e", "")
-        events_raw = raw.get("a", [])
 
-        if status != "Success" and not events_raw:
-            return self._error_schema(bl_no, f"ONE LINE returned status: {status}")
+        # Old cop-events shape, kept for backward compatibility in case
+        # this adapter is ever pointed back at that endpoint.
+        if "e" in raw and "a" in raw:
+            status = raw.get("e", "")
+            events_raw = raw.get("a", [])
+            if status != "Success" and not events_raw:
+                return self._error_schema(bl_no, f"ONE LINE returned status: {status}")
+        else:
+            # New /search shape: look for the list of results under any of
+            # these commonly-used envelope keys.
+            events_raw = None
+            for key in ("data", "list", "result", "results", "records", "rows", "items"):
+                value = raw.get(key)
+                if isinstance(value, list):
+                    events_raw = value
+                    break
+                if isinstance(value, dict):
+                    for nested_key in ("list", "result", "results", "records", "rows", "items"):
+                        nested = value.get(nested_key)
+                        if isinstance(nested, list):
+                            events_raw = nested
+                            break
+                    if events_raw is not None:
+                        break
+
+            if events_raw is None:
+                # Nothing matched — no results found for this search_text,
+                # or the shape is unrecognized. Surface the raw payload so
+                # it's easy to inspect and adjust the key names above.
+                error = self._error_schema(
+                    bl_no,
+                    "ONE LINE /search returned no recognizable result list "
+                    "(check 'raw' in the error payload to find the correct key).",
+                )
+                error["raw"] = raw
+                return error
+
+        events_raw = self._flatten_events(events_raw)
 
         events = [self._parse_event(e) for e in events_raw]
 
         # Sort events by date ascending (oldest first)
-        events.sort(key=lambda x: x["timestamp"] or "")
+        # NOTE: make_event() returns a TrackingEvent dataclass instance,
+        # not a dict — use attribute access, not subscripting.
+        events.sort(key=lambda x: x.timestamp or "")
 
         # Derive POL/POD from first/last ACTUAL events
         pol, pod = self._derive_pol_pod(events_raw)
+
+        # Vessel/voyage/etd/eta aren't guaranteed to live on the event
+        # records themselves — search the whole raw payload for them too.
+        vessel = self._deep_find(raw, ("vesselname", "vessel")) or ""
+        voyage = self._deep_find(raw, ("voyageno", "voyage", "voyagenumber")) or ""
+        etd = self._parse_date(self._deep_find(raw, ("etd", "estimateddeparture", "departuredate")))
+        eta = self._parse_date(self._deep_find(raw, ("eta", "estimatedarrival", "arrivaldate")))
 
         return {
             "bl_number":  bl_no,
@@ -164,10 +231,10 @@ class OneLineAdapter(BaseAdapter):
             "booking_no": bl_no,
             "pol":        pol,
             "pod":        pod,
-            "vessel":     "",       # ONE LINE cop-events doesn't return vessel at top level
-            "voyage":     "",
-            "etd":        None,
-            "eta":        None,
+            "vessel":     vessel,
+            "voyage":     voyage,
+            "etd":        etd,
+            "eta":        eta,
             "containers": [],       # container_no passed separately; not in this response
             "vessels":    [],
             "route":      [],
@@ -179,21 +246,119 @@ class OneLineAdapter(BaseAdapter):
     # Helpers
     # -------------------------------------------------------------------------
 
+    # Keys under which a single result record might nest its own list of
+    # movement/status events, rather than being an event itself.
+    _NESTED_EVENT_LIST_KEYS = (
+        "events", "eventlist", "movements", "milestones",
+        "history", "containerevents", "trackingevents", "copevents",
+        "statuslist", "activities",
+    )
+
+    def _flatten_events(self, records: list) -> list:
+        """
+        The /search endpoint may return booking/container-level records
+        that each nest their own event history under a key like "events"
+        or "movements", rather than the records themselves being events.
+        Flatten to a single list of raw event dicts either way.
+        """
+        flattened = []
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            nested = None
+            for key in self._NESTED_EVENT_LIST_KEYS:
+                value = self._get_ci(record, key)
+                if isinstance(value, list) and value:
+                    nested = value
+                    break
+            if nested is not None:
+                flattened.extend(item for item in nested if isinstance(item, dict))
+            else:
+                flattened.append(record)
+        return flattened
+
+    def _get_ci(self, d: dict, key: str):
+        """Case-insensitive single-level dict lookup."""
+        if not isinstance(d, dict):
+            return None
+        for k, v in d.items():
+            if k.lower() == key.lower():
+                return v
+        return None
+
+    def _deep_find(self, node, candidates, max_depth: int = 4):
+        """
+        Recursively search dicts/lists for the first non-empty value whose
+        key (case-insensitive) matches one of `candidates`. Used because we
+        don't have a confirmed sample of the /search response shape, so we
+        can't hardcode exact key names or nesting depth.
+        """
+        candidates = {c.lower() for c in candidates}
+        stack = [(node, 0)]
+        while stack:
+            current, depth = stack.pop(0)
+            if isinstance(current, dict):
+                for k, v in current.items():
+                    if k.lower() in candidates and v not in (None, "", [], {}):
+                        return v
+                if depth < max_depth:
+                    for v in current.values():
+                        if isinstance(v, (dict, list)):
+                            stack.append((v, depth + 1))
+            elif isinstance(current, list):
+                if depth < max_depth:
+                    for item in current:
+                        if isinstance(item, (dict, list)):
+                            stack.append((item, depth + 1))
+        return None
+
     def _parse_event(self, item: dict) -> dict:
-        """Parse a single cop-event entry."""
-        location     = item.get("location", {})
-        location_name = location.get("locationName", "")
-        country      = location.get("countryName", "")
+        """
+        Parse a single event/movement record. Field names are guessed
+        defensively via _deep_find since the exact /search response shape
+        isn't confirmed yet — tighten these candidate lists once you have
+        a real sample (see the RAW RESPONSE print in _normalize).
+        """
+        status = self._deep_find(item, (
+            "eventname", "status", "eventdesc", "eventdescription",
+            "description", "milestone", "activityname", "movementtype",
+            "statusdesc", "activity",
+        )) or ""
+
+        location = self._deep_find(item, (
+            "locationname", "location", "portname", "port",
+            "placename", "place", "terminal",
+        )) or ""
+        # location might itself be a nested dict like {"locationName": ...}
+        if isinstance(location, dict):
+            location = self._deep_find(location, ("locationname", "name")) or ""
+
+        country = self._deep_find(item, ("countryname", "country")) or ""
+        if isinstance(country, dict):
+            country = self._deep_find(country, ("countryname", "name")) or ""
+
+        timestamp_raw = self._deep_find(item, (
+            "eventdate", "eventlocalportdate", "date", "eventdatetime",
+            "actualdate", "eventtime", "occurredat", "statusdate",
+            "movementdate", "timestamp",
+        ))
+
+        vessel = self._deep_find(item, ("vesselname", "vessel")) or None
+        voyage = self._deep_find(item, ("voyageno", "voyage", "voyagenumber")) or None
+        event_type = self._deep_find(item, (
+            "triggertype", "eventstatus", "actualestimated", "type",
+        )) or ""
+        raw_code = self._deep_find(item, ("matrixid", "eventcode", "code")) or ""
 
         return make_event(
-            timestamp=  self._parse_date(item.get("eventDate") or item.get("eventLocalPortDate")),
-            status=     item.get("eventName", ""),
-            location=   location_name,
-            country=    country,
-            vessel=     None,   # not in cop-events response
-            voyage=     None,
-            event_type= item.get("triggerType", ""),   # "ACTUAL" | "ESTIMATED"
-            raw_code=   item.get("matrixId", ""),       # e.g. "E012", "E040", "E058"
+            timestamp=  self._parse_date(timestamp_raw),
+            status=     str(status),
+            location=   str(location),
+            country=    str(country) if country else None,
+            vessel=     str(vessel) if vessel else None,
+            voyage=     str(voyage) if voyage else None,
+            event_type= str(event_type),
+            raw_code=   str(raw_code),
         )
 
     def _derive_pol_pod(self, events_raw: list) -> tuple[str, str]:
@@ -202,19 +367,25 @@ class OneLineAdapter(BaseAdapter):
         POL = location of first 'Gate In' or 'Loaded on Vessel' event
         POD = location of last 'Discharged' or 'Empty Return' event
         """
-        pol_keywords = ["gate in", "loaded on vessel", "stuffing"]
+        pol_keywords = ["gate in", "loaded on vessel", "stuffing", "load"]
         pod_keywords = ["discharged", "delivery", "empty container return", "empty return"]
 
         pol = ""
         pod = ""
 
         for e in events_raw:
-            name     = e.get("eventName", "").lower()
-            location = e.get("location", {}).get("locationName", "")
+            if not isinstance(e, dict):
+                continue
+            name = str(self._deep_find(e, (
+                "eventname", "status", "eventdesc", "description", "activity",
+            )) or "").lower()
+            location = self._deep_find(e, ("locationname", "location", "portname", "port"))
+            if isinstance(location, dict):
+                location = self._deep_find(location, ("locationname", "name")) or ""
+            location = str(location or "")
 
-            if not pol:
-                if any(k in name for k in pol_keywords):
-                    pol = location
+            if not pol and any(k in name for k in pol_keywords):
+                pol = location
 
             if any(k in name for k in pod_keywords):
                 pod = location

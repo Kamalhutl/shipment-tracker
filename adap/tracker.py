@@ -22,7 +22,7 @@ import logging
 from typing import Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from router import get_adapter, detect_carrier, UnknownCarrierError
+from adap.router import get_adapter, detect_carrier, UnknownCarrierError
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Logging

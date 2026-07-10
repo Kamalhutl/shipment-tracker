@@ -1,0 +1,30 @@
+# ─── Web layer ────────────────────────────────────────────────────────────────
+# FastAPI + ASGI server
+fastapi>=0.110.0,<1.0.0
+uvicorn[standard]>=0.29.0,<1.0.0
+
+# Data validation (FastAPI depends on this; pin to v2)
+pydantic>=2.6.0,<3.0.0
+
+# HTML templating
+jinja2>=3.1.3,<4.0.0
+
+# Required by FastAPI to parse multipart / form data
+python-multipart>=0.0.9,<1.0.0
+
+# ─── Scraper / tracker layer (existing — do not remove) ───────────────────────
+# HTTP client used by carrier scrapers
+requests>=2.31.0,<3.0.0
+
+# Browser automation (Playwright-based PIL adapter)
+playwright>=1.43.0
+
+# Excel workflow
+openpyxl>=3.1.2,<4.0.0
+
+# ─── Optional dev / production extras ─────────────────────────────────────────
+# Structured logging (optional — remove if not used)
+# python-json-logger>=2.0.7
+
+# Production ASGI runner alternative to uvicorn
+# gunicorn>=21.2.0

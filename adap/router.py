@@ -18,18 +18,18 @@ import re
 from typing import Type, Optional
 
 # ── Import all adapters ────────────────────────────────────────────────────────
-from adapters.kmtc       import KMTCAdapter
-from adapters.blue_water import BlueWaterAdapter
-from adapters.trans_line import TransLineAdapter
-from adapters.one_line   import OneLineAdapter
-from adapters.msc        import MSCAdapter
-from adapters.hmm        import HMMAdapter
-from adapters.pil        import PILAdapter
-# from adapters.hapag    import HapagAdapter     # add when ready
-# from adapters.cosco    import COSCOAdapter     # add when ready
-# from adapters.interasia import InterAsiaAdapter
-
-from base import BaseAdapter
+from adap.adapters.kmtc       import KMTCAdapter
+from adap.adapters.blue_water import BlueWaterAdapter
+from adap.adapters.trans_line import TransLineAdapter
+from adap.adapters.one_line   import OneLineAdapter
+from adap.adapters.msc        import MSCAdapter
+from adap.adapters.hmm        import HMMAdapter
+from adap.adapters.pil        import PILAdapter
+from adap.adapters.hapag import HapagAdapter
+# from adap.adapters.cosco    import COSCOAdapter     # add when ready
+# from adap.adapters.interasia import InterAsiaAdapter
+from adap.base import BaseAdapter
+from adap.adapters.trans_asia import TransAsiaAdapter
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -95,6 +95,8 @@ BL_PREFIX_MAP: dict[str, str] = {
     
     # TRANS ASIA
     "TASU": "TRANS_ASIA",
+    "TAL": "TRANS_ASIA",
+    "TALTLS": "TRANS_ASIA",
 }
 
 
@@ -110,12 +112,12 @@ ADAPTER_MAP: dict[str, Type[BaseAdapter]] = {
     "MSC":        MSCAdapter,
     # "MAERSK":     MaerskAdapter,
     # "CMA_CGM":    CMACGMAdapter,
-    # "HAPAG":      HapagAdapter,
+    "HAPAG":        HapagAdapter,
     # "COSCO":      COSCOAdapter,
-    # "INTERASIA":  InterAsiaAdapter,
+    #"INTERASIA":  InterAsiaAdapter,
     "HMM":        HMMAdapter,
     "PIL": PILAdapter,
-    # "TRANS_ASIA": TransAsiaAdapter,
+    "TRANS_ASIA": TransAsiaAdapter,
 }
 
 

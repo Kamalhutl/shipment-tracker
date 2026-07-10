@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Track your sea freight shipment in real-time. Enter a Bill of Lading number to get live carrier, vessel, and container information." />
+  <meta name="theme-color" content="#0B1D3A" />
+
+  <title>FreightPulse — Live Shipment Tracker</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════════════════════════════════════ -->
+  <header class="nav-wrapper" role="banner">
+    <nav class="nav" aria-label="Main navigation">
+
+      <!-- Logo -->
+      <a href="/" class="nav-logo" aria-label="FreightPulse home">
+        <span class="nav-logo__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="28" height="28" rx="7" fill="#1A56DB"/>
+            <path d="M5 17.5L9.5 13L13 16.5L18.5 11L23 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="23" cy="15" r="1.5" fill="white"/>
+          </svg>
+        </span>
+        <span class="nav-logo__text">Freight<strong>Pulse</strong></span>
+      </a>
+
+      <!-- Nav links -->
+      <ul class="nav-links" role="list">
+        <li><a href="#" class="nav-link nav-link--active" aria-current="page">Home</a></li>
+        <li><a href="#track" class="nav-link">Track</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+
+      <!-- Controls -->
+      <div class="nav-controls">
+        <!-- Dark mode toggle -->
+        <button
+          class="theme-toggle"
+          id="themeToggle"
+          aria-label="Switch to dark mode"
+          title="Toggle theme"
+        >
+          <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">
+            <!-- Sun -->
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="9" cy="9" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+              <line x1="9" y1="1" x2="9" y2="3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="9" y1="15" x2="9" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="1" y1="9" x2="3" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="15" y1="9" x2="17" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="3.22" y1="3.22" x2="4.64" y2="4.64" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="13.36" y1="13.36" x2="14.78" y2="14.78" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="3.22" y1="14.78" x2="4.64" y2="13.36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="13.36" y1="4.64" x2="14.78" y2="3.22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">
+            <!-- Moon -->
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.5 10.5A7 7 0 1 1 7.5 2.5a5.5 5.5 0 0 0 8 8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+
+        <!-- Mobile hamburger -->
+        <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true" role="dialog" aria-label="Mobile navigation">
+      <ul role="list">
+        <li><a href="#" class="nav-link" onclick="closeMobileMenu()">Home</a></li>
+        <li><a href="#track" class="nav-link" onclick="closeMobileMenu()">Track</a></li>
+        <li><a href="#about" class="nav-link" onclick="closeMobileMenu()">About</a></li>
+        <li><a href="#contact" class="nav-link" onclick="closeMobileMenu()">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HERO SECTION
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section class="hero" id="track" aria-labelledby="heroHeading">
+
+      <!-- Background grid decoration -->
+      <div class="hero__grid-bg" aria-hidden="true"></div>
+
+      <!-- Floating stat chips -->
+      <div class="hero__chips" aria-hidden="true">
+        <span class="hero__chip hero__chip--left">
+          <span class="chip-dot chip-dot--green"></span>MSC Gülsün — ETA in 3 days
+        </span>
+        <span class="hero__chip hero__chip--right">
+          <span class="chip-dot chip-dot--blue"></span>COSCO Universe — On Schedule
+        </span>
+      </div>
+
+      <div class="hero__content">
+        <p class="hero__eyebrow">Real-Time Freight Tracking</p>
+
+        <h1 class="hero__heading" id="heroHeading">
+          Track Your Shipment<br />
+          <span class="hero__heading-accent">Instantly</span>
+        </h1>
+
+        <p class="hero__subtitle">
+          Enter your Bill of Lading number to see live carrier details,
+          vessel position, port events, and container status — all in one place.
+        </p>
+
+        <!-- Search form -->
+        <div class="search-wrapper">
+          <div class="search-box" id="searchBox" role="search">
+            <label for="blInput" class="sr-only">Bill of Lading Number</label>
+
+            <div class="search-box__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 7L10 3L17 7V13L10 17L3 13V7Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M10 3V17M3 7L17 13M17 7L3 13" stroke="currentColor" stroke-width="1" stroke-opacity="0.4"/>
+              </svg>
+            </div>
+
+            <input
+              type="text"
+              id="blInput"
+              class="search-box__input"
+              placeholder="e.g. MEDU1234567 or HLCU987654321"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              maxlength="40"
+              aria-label="Enter Bill of Lading number"
+              aria-describedby="blInputHint"
+            />
+
+            <button
+              class="search-box__btn"
+              id="trackBtn"
+              type="button"
+              aria-label="Track shipment"
+            >
+              <span class="search-box__btn-text">Track</span>
+              <span class="search-box__btn-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <p class="search-hint" id="blInputHint">
+            Accepts BL numbers from MSC, CMA CGM, COSCO, Hapag-Lloyd, Evergreen and more.
+          </p>
+
+          <!-- Validation error (inline) -->
+          <p class="search-error" id="searchError" role="alert" aria-live="polite" hidden></p>
+        </div>
+
+      </div>
+
+      <!-- Hero illustration — stylised route dots -->
+      <div class="hero__route-illustration" aria-hidden="true">
+        <div class="route-dots">
+          <span class="route-dot route-dot--origin"></span>
+          <span class="route-line"></span>
+          <span class="route-dot route-dot--transship"></span>
+          <span class="route-line"></span>
+          <span class="route-dot route-dot--destination"></span>
+        </div>
+        <div class="route-labels">
+          <span>Origin</span>
+          <span>Transit</span>
+          <span>Destination</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         LOADING STATE
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section class="loading-section" id="loadingSection" hidden aria-live="polite" aria-label="Loading shipment data">
+
+      <div class="loading-header">
+        <div class="spinner" aria-hidden="true">
+          <div class="spinner__ring"></div>
+        </div>
+        <div>
+          <p class="loading-title">Retrieving shipment data…</p>
+          <p class="loading-sub" id="loadingStepText">Connecting to carrier</p>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="progress-bar" aria-hidden="true">
+        <div class="progress-bar__fill" id="progressFill"></div>
+      </div>
+
+      <!-- Skeleton cards -->
+      <div class="skeleton-grid" aria-hidden="true">
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--long"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--medium"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--long"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--medium"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ERROR PANEL
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section class="error-section" id="errorSection" hidden role="alert" aria-live="assertive" aria-labelledby="errorTitle">
+
+      <div class="error-card">
+        <div class="error-card__icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+            <path d="M16 9V17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="16" cy="22" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="error-card__body">
+          <h2 class="error-card__title" id="errorTitle">Tracking failed</h2>
+          <p class="error-card__message" id="errorMessage">We could not retrieve shipment data. Please check your BL number and try again.</p>
+          <div class="error-card__actions">
+            <button class="btn btn--ghost" id="retryBtn" type="button">Try again</button>
+            <p class="error-card__tip">
+              Make sure your BL number contains only letters, digits, and hyphens (5–40 characters).
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         RESULTS SECTION
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section class="results-section" id="resultsSection" hidden aria-labelledby="resultsHeading">
+
+      <!-- Results header -->
+      <div class="results-header">
+        <div>
+          <p class="results-eyebrow">Tracking Result</p>
+          <h2 class="results-heading" id="resultsHeading">
+            BL <span class="results-bl-number" id="resultsBLNumber">—</span>
+          </h2>
+        </div>
+        <div class="results-header__meta">
+          <span class="status-badge" id="statusBadge" aria-label="Shipment status">
+            <span class="status-badge__dot" aria-hidden="true"></span>
+            <span id="statusBadgeText">—</span>
+          </span>
+          <button class="btn btn--outline btn--sm" id="newTrackBtn" type="button">
+            Track another
+          </button>
+        </div>
+      </div>
+
+      <!-- ── SUMMARY CARDS ──────────────────────────────────────────── -->
+      <div class="summary-grid" aria-label="Shipment summary">
+
+        <article class="info-card" aria-label="Carrier">
+          <p class="info-card__label">Carrier</p>
+          <p class="info-card__value" id="cardCarrier">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Booking number">
+          <p class="info-card__label">Booking Number</p>
+          <p class="info-card__value info-card__value--mono" id="cardBooking">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Vessel name">
+          <p class="info-card__label">Vessel</p>
+          <p class="info-card__value" id="cardVessel">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Voyage number">
+          <p class="info-card__label">Voyage</p>
+          <p class="info-card__value info-card__value--mono" id="cardVoyage">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Port of loading">
+          <p class="info-card__label">Origin Port (POL)</p>
+          <p class="info-card__value" id="cardPOL">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Port of discharge">
+          <p class="info-card__label">Destination Port (POD)</p>
+          <p class="info-card__value" id="cardPOD">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Estimated time of departure">
+          <p class="info-card__label">ETD</p>
+          <p class="info-card__value" id="cardETD">—</p>
+        </article>
+
+        <article class="info-card" aria-label="Estimated time of arrival">
+          <p class="info-card__label">ETA</p>
+          <p class="info-card__value" id="cardETA">—</p>
+        </article>
+
+      </div>
+
+      <!-- ── ROUTE SECTION ─────────────────────────────────────────── -->
+      <div class="section-block" id="routeBlock">
+        <h3 class="section-block__title">Route</h3>
+
+        <div class="route-map" id="routeMap" aria-label="Shipment route">
+          <!-- Populated by app.js -->
+          <div class="route-map__placeholder">Route data unavailable.</div>
+        </div>
+      </div>
+
+      <!-- ── TIMELINE ───────────────────────────────────────────────── -->
+      <div class="section-block" id="timelineBlock">
+        <h3 class="section-block__title">
+          Port Events
+          <span class="section-block__count" id="timelineCount" aria-label="Event count"></span>
+        </h3>
+
+        <ol class="timeline" id="timeline" aria-label="Shipment events">
+          <!-- Populated by app.js -->
+          <li class="timeline__empty">No events recorded yet.</li>
+        </ol>
+      </div>
+
+      <!-- ── CONTAINERS ─────────────────────────────────────────────── -->
+      <div class="section-block" id="containersBlock">
+        <h3 class="section-block__title">
+          Containers
+          <span class="section-block__count" id="containersCount" aria-label="Container count"></span>
+        </h3>
+
+        <div class="containers-grid" id="containersGrid" aria-label="Container list">
+          <!-- Populated by app.js -->
+          <p class="containers-empty">No container data available.</p>
+        </div>
+      </div>
+
+      <!-- ── RAW DATA (collapsed) ─────────────────────────────────── -->
+      <details class="raw-data-toggle">
+        <summary class="raw-data-toggle__summary">View raw API response</summary>
+        <pre class="raw-data-toggle__pre" id="rawData" aria-label="Raw JSON response"></pre>
+      </details>
+
+    </section><!-- /resultsSection -->
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ABOUT SECTION
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section class="about-section" id="about" aria-labelledby="aboutHeading">
+
+      <div class="about-section__inner">
+        <p class="section-eyebrow">About FreightPulse</p>
+        <h2 class="about-section__heading" id="aboutHeading">
+          Multi-carrier tracking,<br />one interface.
+        </h2>
+        <p class="about-section__body">
+          FreightPulse connects to a unified adapter engine that scrapes and normalises
+          real-time data from the world's largest ocean carriers. No spreadsheets,
+          no manual logins — just a BL number and instant answers.
+        </p>
+
+        <ul class="feature-list" role="list">
+          <li class="feature-item">
+            <span class="feature-item__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10L8 14L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Carrier auto-detection from BL prefix
+          </li>
+          <li class="feature-item">
+            <span class="feature-item__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10L8 14L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Real-time vessel and port event data
+          </li>
+          <li class="feature-item">
+            <span class="feature-item__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10L8 14L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Per-container status, type, and weight
+          </li>
+          <li class="feature-item">
+            <span class="feature-item__icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 10L8 14L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            Structured JSON API for integrations
+          </li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CONTACT SECTION
+    ═══════════════════════════════════════════════════════════════════ -->
+    <section class="contact-section" id="contact" aria-labelledby="contactHeading">
+      <div class="contact-section__inner">
+        <p class="section-eyebrow">Get in touch</p>
+        <h2 class="contact-section__heading" id="contactHeading">Need help with tracking?</h2>
+        <p class="contact-section__body">
+          If your BL number isn't being recognised or you'd like to add a carrier,
+          open an issue or reach out directly.
+        </p>
+        <a href="mailto:support@freightpulse.io" class="btn btn--primary">
+          Contact support
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="nav-logo" aria-label="FreightPulse">
+          <span class="nav-logo__icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="7" fill="#1A56DB"/>
+              <path d="M5 17.5L9.5 13L13 16.5L18.5 11L23 15" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="23" cy="15" r="1.5" fill="white"/>
+            </svg>
+          </span>
+          <span class="nav-logo__text">Freight<strong>Pulse</strong></span>
+        </span>
+        <p class="footer__tagline">Real-time shipment tracking for freight professionals.</p>
+      </div>
+
+      <nav class="footer__links" aria-label="Footer navigation">
+        <a href="/api/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+        <a href="/health">Status</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <p class="footer__copy">
+        &copy; <span id="footerYear"></span> FreightPulse. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="/static/js/app.js"></script>
+
+</body>
+</html>
