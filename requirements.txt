@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+
+selenium
+webdriver-manager
+
+requests
+beautifulsoup4
+
+openpyxl
+pandas
+
+curl-cffi
